@@ -22,7 +22,9 @@ extension PrettyQrDecorationSafetyExtension on PrettyQrDecoration {
   }) {
     final covered = estimatedCoveredFraction;
     final capacity = errorCorrectLevel.recoveryRate / 100;
-    final recommended = _recommendedErrorCorrectLevel(covered);
+    final recommended = recommendedErrorCorrectLevel(
+      errorCorrectLevel: errorCorrectLevel,
+    );
 
     final scannability = covered <= capacity * 0.45
         ? PrettyQrScannability.good
@@ -54,6 +56,18 @@ extension PrettyQrDecorationSafetyExtension on PrettyQrDecoration {
     if (image.scale <= maxScale) return this;
     return copyWith(image: image.copyWith(scale: maxScale));
   }
+
+  /// Returns the lowest correction level that is at least as strong as
+  /// [errorCorrectLevel] and conservative enough for this decoration.
+  QrErrorCorrectLevel recommendedErrorCorrectLevel({
+    final QrErrorCorrectLevel errorCorrectLevel = QrErrorCorrectLevel.low,
+  }) {
+    final recommended = _recommendedErrorCorrectLevel(estimatedCoveredFraction);
+    return _errorCorrectLevelRank(recommended) >
+            _errorCorrectLevelRank(errorCorrectLevel)
+        ? recommended
+        : errorCorrectLevel;
+  }
 }
 
 QrErrorCorrectLevel _recommendedErrorCorrectLevel(double coveredFraction) {
@@ -68,4 +82,13 @@ QrErrorCorrectLevel _recommendedErrorCorrectLevel(double coveredFraction) {
     }
   }
   return QrErrorCorrectLevel.high;
+}
+
+int _errorCorrectLevelRank(QrErrorCorrectLevel level) {
+  return switch (level) {
+    QrErrorCorrectLevel.low => 0,
+    QrErrorCorrectLevel.medium => 1,
+    QrErrorCorrectLevel.quartile => 2,
+    QrErrorCorrectLevel.high => 3,
+  };
 }

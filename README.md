@@ -84,6 +84,23 @@ PrettyQrView.typedData(
 )
 ```
 
+For QR codes with an embedded logo, `PrettyQrView.safeData` applies
+conservative safety defaults automatically:
+
+```dart
+PrettyQrView.safeData(
+  data: 'lorem ipsum dolor sit amet',
+  errorCorrectLevel: QrErrorCorrectLevel.low,
+  decoration: const PrettyQrDecoration(
+    image: PrettyQrDecorationImage(
+      image: AssetImage('images/logo.png'),
+      position: PrettyQrDecorationImagePosition.embedded,
+      scale: 0.4,
+    ),
+  ),
+)
+```
+
 To validate data before rendering:
 
 ```dart
@@ -108,6 +125,10 @@ final report = decoration.estimateScannability(
 
 final safeDecoration = decoration.withSafeImage(
   errorCorrectLevel: QrErrorCorrectLevel.high,
+);
+
+final recommendedLevel = decoration.recommendedErrorCorrectLevel(
+  errorCorrectLevel: QrErrorCorrectLevel.low,
 );
 ```
 

@@ -12,77 +12,66 @@ class _TestUnknownGradient extends Gradient with Fake {
 void main() {
   group('PrettyQrBaseGradientExtension', () {
     group('lerpToColor', () {
-      test(
-        'returns correct value when lerps linear gradient to color',
-        () {
-          // arrange
-          const color = Color(0xFFFFFFFF);
-          const gradient = LinearGradient(
-            colors: [Color(0xFF000000), Color(0xFF7F7F7F)],
-          );
+      test('returns correct value when lerps linear gradient to color', () {
+        // arrange
+        const color = Color(0xFFFFFFFF);
+        const gradient = LinearGradient(
+          colors: [Color(0xFF000000), Color(0xFF7F7F7F)],
+        );
 
-          // act
-          final lerpedColor = gradient.lerpToColor(color, 0.5);
+        // act
+        final lerpedColor = gradient.lerpToColor(color, 0.5);
 
-          // assert
-          expect(
-            lerpedColor,
-            equals(
-              const LinearGradient(
-                colors: [Color(0xFF7F7F7F), Color(0xFFBFBFBF)],
-              ),
+        // assert
+        expect(
+          lerpedColor,
+          equals(
+            const LinearGradient(
+              colors: [Color(0xFF808080), Color(0xFFBFBFBF)],
             ),
-          );
-        },
-      );
+          ),
+        );
+      });
 
-      test(
-        'returns correct value when lerps radial gradient to color',
-        () {
-          // arrange
-          const color = Color(0xFFFFFFFF);
-          const gradient = RadialGradient(
-            colors: [Color(0xFF000000), Color(0xFF7F7F7F)],
-          );
+      test('returns correct value when lerps radial gradient to color', () {
+        // arrange
+        const color = Color(0xFFFFFFFF);
+        const gradient = RadialGradient(
+          colors: [Color(0xFF000000), Color(0xFF7F7F7F)],
+        );
 
-          // act
-          final lerpedColor = gradient.lerpToColor(color, 0.5);
+        // act
+        final lerpedColor = gradient.lerpToColor(color, 0.5);
 
-          // assert
-          expect(
-            lerpedColor,
-            equals(
-              const RadialGradient(
-                colors: [Color(0xFF7F7F7F), Color(0xFFBFBFBF)],
-              ),
+        // assert
+        expect(
+          lerpedColor,
+          equals(
+            const RadialGradient(
+              colors: [Color(0xFF808080), Color(0xFFBFBFBF)],
             ),
-          );
-        },
-      );
+          ),
+        );
+      });
 
-      test(
-        'returns correct value when lerps sweep gradient to color',
-        () {
-          // arrange
-          const color = Color(0xFFFFFFFF);
-          const gradient = SweepGradient(
-            colors: [Color(0xFF000000), Color(0xFF7F7F7F)],
-          );
+      test('returns correct value when lerps sweep gradient to color', () {
+        // arrange
+        const color = Color(0xFFFFFFFF);
+        const gradient = SweepGradient(
+          colors: [Color(0xFF000000), Color(0xFF7F7F7F)],
+        );
 
-          // act
-          final lerpedColor = gradient.lerpToColor(color, 0.5);
+        // act
+        final lerpedColor = gradient.lerpToColor(color, 0.5);
 
-          // assert
-          expect(
-            lerpedColor,
-            equals(
-              const SweepGradient(
-                colors: [Color(0xFF7F7F7F), Color(0xFFBFBFBF)],
-              ),
-            ),
-          );
-        },
-      );
+        // assert
+        expect(
+          lerpedColor,
+          equals(
+            const SweepGradient(colors: [Color(0xFF808080), Color(0xFFBFBFBF)]),
+          ),
+        );
+      });
 
       test(
         'lerp returns correct value when lerps unknown gradient to color and '
@@ -127,77 +116,66 @@ void main() {
 
   group('PrettyQrColorBaseGradientExtension', () {
     group('lerpToGradient', () {
-      test(
-        'returns correct value when lerps color to linear gradient',
-        () {
-          // arrange
-          const color = Color(0xFFFFFFFF);
-          const gradient = LinearGradient(
-            colors: [Color(0xFF000000), Color(0xFF7F7F7F)],
-          );
+      test('returns correct value when lerps color to linear gradient', () {
+        // arrange
+        const color = Color(0xFFFFFFFF);
+        const gradient = LinearGradient(
+          colors: [Color(0xFF000000), Color(0xFF7F7F7F)],
+        );
 
-          // act
-          final lerpedColor = color.lerpToGradient(gradient, 0.5);
+        // act
+        final lerpedColor = color.lerpToGradient(gradient, 0.5);
 
-          // assert
-          expect(
-            lerpedColor,
-            equals(
-              const LinearGradient(
-                colors: [Color(0xFF7F7F7F), Color(0xFFBFBFBF)],
-              ),
+        // assert
+        expect(
+          lerpedColor,
+          equals(
+            const LinearGradient(
+              colors: [Color(0xFF808080), Color(0xFFBFBFBF)],
             ),
-          );
-        },
-      );
+          ),
+        );
+      });
 
-      test(
-        'returns correct value when lerps color to radial gradient',
-        () {
-          // arrange
-          const color = Color(0xFFFFFFFF);
-          const gradient = RadialGradient(
-            colors: [Color(0xFF000000), Color(0xFF7F7F7F)],
-          );
+      test('returns correct value when lerps color to radial gradient', () {
+        // arrange
+        const color = Color(0xFFFFFFFF);
+        const gradient = RadialGradient(
+          colors: [Color(0xFF000000), Color(0xFF7F7F7F)],
+        );
 
-          // act
-          final lerpedColor = color.lerpToGradient(gradient, 0.5);
+        // act
+        final lerpedColor = color.lerpToGradient(gradient, 0.5);
 
-          // assert
-          expect(
-            lerpedColor,
-            equals(
-              const RadialGradient(
-                colors: [Color(0xFF7F7F7F), Color(0xFFBFBFBF)],
-              ),
+        // assert
+        expect(
+          lerpedColor,
+          equals(
+            const RadialGradient(
+              colors: [Color(0xFF808080), Color(0xFFBFBFBF)],
             ),
-          );
-        },
-      );
+          ),
+        );
+      });
 
-      test(
-        'returns correct value when lerps color to sweep gradient',
-        () {
-          // arrange
-          const color = Color(0xFFFFFFFF);
-          const gradient = SweepGradient(
-            colors: [Color(0xFF000000), Color(0xFF7F7F7F)],
-          );
+      test('returns correct value when lerps color to sweep gradient', () {
+        // arrange
+        const color = Color(0xFFFFFFFF);
+        const gradient = SweepGradient(
+          colors: [Color(0xFF000000), Color(0xFF7F7F7F)],
+        );
 
-          // act
-          final lerpedColor = color.lerpToGradient(gradient, 0.5);
+        // act
+        final lerpedColor = color.lerpToGradient(gradient, 0.5);
 
-          // assert
-          expect(
-            lerpedColor,
-            equals(
-              const SweepGradient(
-                colors: [Color(0xFF7F7F7F), Color(0xFFBFBFBF)],
-              ),
-            ),
-          );
-        },
-      );
+        // assert
+        expect(
+          lerpedColor,
+          equals(
+            const SweepGradient(colors: [Color(0xFF808080), Color(0xFFBFBFBF)]),
+          ),
+        );
+      });
 
       test(
         'lerp returns correct value when lerps color to unknown gradient and '

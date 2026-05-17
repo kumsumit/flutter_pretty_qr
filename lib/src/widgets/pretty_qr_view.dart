@@ -10,6 +10,7 @@ import 'package:pretty_qr_code/src/painting/decoration/pretty_qr_decoration.dart
 
 import 'package:pretty_qr_code/src/widgets/pretty_qr_theme.dart';
 import 'package:pretty_qr_code/src/widgets/pretty_qr_data_view.dart';
+import 'package:pretty_qr_code/src/painting/extensions/pretty_qr_decoration_safety_extension.dart';
 import 'package:pretty_qr_code/src/widgets/extensions/pretty_qr_decoration_theme_extension.dart';
 
 /// {@template pretty_qr_code.widgets.PrettyQrView}
@@ -67,6 +68,38 @@ class PrettyQrView extends LeafRenderObjectWidget {
       maskPattern: maskPattern,
       minTypeNumber: minTypeNumber,
       errorCorrectLevel: errorCorrectLevel,
+      errorBuilder: errorBuilder,
+    );
+  }
+
+  /// Creates a QR symbol from [data] with conservative logo safety defaults.
+  ///
+  /// When [decoration] contains an embedded image, this constructor clamps an
+  /// oversized image and raises the error correction level when appropriate.
+  @factory
+  static Widget safeData({
+    required final String data,
+    final Key? key,
+    final PrettyQrDecoration? decoration,
+    final ImageErrorWidgetBuilder? errorBuilder,
+    final int? maskPattern,
+    final int minTypeNumber = 1,
+    final QrErrorCorrectLevel errorCorrectLevel = QrErrorCorrectLevel.low,
+  }) {
+    final safeErrorCorrectLevel =
+        decoration?.recommendedErrorCorrectLevel(
+          errorCorrectLevel: errorCorrectLevel,
+        ) ??
+        errorCorrectLevel;
+    return PrettyQrDataView(
+      key: key,
+      data: data,
+      decoration: decoration?.withSafeImage(
+        errorCorrectLevel: safeErrorCorrectLevel,
+      ),
+      maskPattern: maskPattern,
+      minTypeNumber: minTypeNumber,
+      errorCorrectLevel: safeErrorCorrectLevel,
       errorBuilder: errorBuilder,
     );
   }

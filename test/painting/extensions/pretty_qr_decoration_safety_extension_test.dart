@@ -26,6 +26,15 @@ void main() {
       expect(report.recommendedErrorCorrectLevel, QrErrorCorrectLevel.high);
     });
 
+    test('recommends stronger error correction level', () {
+      expect(
+        decoration.recommendedErrorCorrectLevel(
+          errorCorrectLevel: QrErrorCorrectLevel.low,
+        ),
+        QrErrorCorrectLevel.high,
+      );
+    });
+
     test('clamps embedded image scale', () {
       final safeDecoration = decoration.withSafeImage(
         errorCorrectLevel: QrErrorCorrectLevel.high,
