@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:meta/meta.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/foundation.dart';
 
@@ -39,10 +38,7 @@ class PrettyQrPainter {
   DecorationImagePainter? _decorationImagePainter;
 
   /// Creates a QR code painter.
-  PrettyQrPainter({
-    required this.onChanged,
-    required this.decoration,
-  });
+  PrettyQrPainter({required this.onChanged, required this.decoration});
 
   /// Draw the QR code image onto the given canvas.
   @nonVirtual
@@ -93,13 +89,17 @@ class PrettyQrPainter {
 
     final imageClipPath = image.clipper.getClip(imageScaledRect.size);
     final imageClipTransform = Matrix4.identity()
-      ..translate(
+      ..translateByDouble(
         imageDeflatedRect.topLeft.dx,
         imageDeflatedRect.topLeft.dy,
+        0,
+        1,
       )
-      ..scale(
+      ..scaleByDouble(
         imageDeflatedRect.width / imageScaledRect.width,
         imageDeflatedRect.height / imageScaledRect.height,
+        1,
+        1,
       );
 
     _decorationImagePainter ??= image.createPainter(onChanged);
@@ -177,10 +177,7 @@ class PrettyQrPainter {
       excludedPoints.add(module.position);
     }
 
-    return PrettyQrMatrix.masked(
-      context.matrix,
-      excludePoints: excludedPoints,
-    );
+    return PrettyQrMatrix.masked(context.matrix, excludePoints: excludedPoints);
   }
 
   /// Discard any resources being held by the object.

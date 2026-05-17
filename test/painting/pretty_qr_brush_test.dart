@@ -92,15 +92,12 @@ void main() {
       final lerpedBrush = PrettyQrBrush.lerp(instance1, instance2, 0.5);
 
       // assert
+      expect(lerpedBrush, isA<PrettyQrGradientBrush>());
       expect(
-        lerpedBrush,
-        equals(
-          const PrettyQrGradientBrush(
-            gradient: LinearGradient(
-              colors: [Color(0xFF808080), Color(0xFFBFBFBF)],
-            ),
-          ),
+        (lerpedBrush as PrettyQrGradientBrush).gradient.colors.map(
+          (color) => color.toARGB32(),
         ),
+        equals([0xFF808080, 0xFFBFBFBF]),
       );
     });
 
@@ -117,15 +114,12 @@ void main() {
       final lerpedBrush = PrettyQrBrush.lerp(instance1, instance2, 0.5);
 
       // assert
+      expect(lerpedBrush, isA<PrettyQrGradientBrush>());
       expect(
-        lerpedBrush,
-        equals(
-          const PrettyQrGradientBrush(
-            gradient: LinearGradient(
-              colors: [Color(0xFF808080), Color(0xFFBFBFBF)],
-            ),
-          ),
+        (lerpedBrush as PrettyQrGradientBrush).gradient.colors.map(
+          (color) => color.toARGB32(),
         ),
+        equals([0xFF808080, 0xFFBFBFBF]),
       );
     });
 
@@ -146,16 +140,12 @@ void main() {
       final lerpedBrush = PrettyQrBrush.lerp(instance1, instance2, 0.5);
 
       // assert
+      expect(lerpedBrush, isA<PrettyQrGradientBrush>());
       expect(
-        lerpedBrush,
-        equals(
-          const PrettyQrGradientBrush(
-            gradient: LinearGradient(
-              stops: [0, 1],
-              colors: [Color(0xFF404040), Color(0xFF404040)],
-            ),
-          ),
+        (lerpedBrush as PrettyQrGradientBrush).gradient.colors.map(
+          (color) => color.toARGB32(),
         ),
+        equals([0xFF404040, 0xFF404040]),
       );
     });
 

@@ -1,5 +1,4 @@
-/// Flutter widgets that makes it easy to render QR codes.
-library pretty_qr_code;
+// Flutter widgets that makes it easy to render QR codes.
 
 export 'package:qr/qr.dart';
 

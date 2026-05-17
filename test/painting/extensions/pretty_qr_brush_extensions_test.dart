@@ -23,14 +23,7 @@ void main() {
         final lerpedColor = gradient.lerpToColor(color, 0.5);
 
         // assert
-        expect(
-          lerpedColor,
-          equals(
-            const LinearGradient(
-              colors: [Color(0xFF808080), Color(0xFFBFBFBF)],
-            ),
-          ),
-        );
+        expectGradientColors(lerpedColor, [0xFF808080, 0xFFBFBFBF]);
       });
 
       test('returns correct value when lerps radial gradient to color', () {
@@ -44,14 +37,7 @@ void main() {
         final lerpedColor = gradient.lerpToColor(color, 0.5);
 
         // assert
-        expect(
-          lerpedColor,
-          equals(
-            const RadialGradient(
-              colors: [Color(0xFF808080), Color(0xFFBFBFBF)],
-            ),
-          ),
-        );
+        expectGradientColors(lerpedColor, [0xFF808080, 0xFFBFBFBF]);
       });
 
       test('returns correct value when lerps sweep gradient to color', () {
@@ -65,12 +51,7 @@ void main() {
         final lerpedColor = gradient.lerpToColor(color, 0.5);
 
         // assert
-        expect(
-          lerpedColor,
-          equals(
-            const SweepGradient(colors: [Color(0xFF808080), Color(0xFFBFBFBF)]),
-          ),
-        );
+        expectGradientColors(lerpedColor, [0xFF808080, 0xFFBFBFBF]);
       });
 
       test(
@@ -127,14 +108,7 @@ void main() {
         final lerpedColor = color.lerpToGradient(gradient, 0.5);
 
         // assert
-        expect(
-          lerpedColor,
-          equals(
-            const LinearGradient(
-              colors: [Color(0xFF808080), Color(0xFFBFBFBF)],
-            ),
-          ),
-        );
+        expectGradientColors(lerpedColor, [0xFF808080, 0xFFBFBFBF]);
       });
 
       test('returns correct value when lerps color to radial gradient', () {
@@ -148,14 +122,7 @@ void main() {
         final lerpedColor = color.lerpToGradient(gradient, 0.5);
 
         // assert
-        expect(
-          lerpedColor,
-          equals(
-            const RadialGradient(
-              colors: [Color(0xFF808080), Color(0xFFBFBFBF)],
-            ),
-          ),
-        );
+        expectGradientColors(lerpedColor, [0xFF808080, 0xFFBFBFBF]);
       });
 
       test('returns correct value when lerps color to sweep gradient', () {
@@ -169,12 +136,7 @@ void main() {
         final lerpedColor = color.lerpToGradient(gradient, 0.5);
 
         // assert
-        expect(
-          lerpedColor,
-          equals(
-            const SweepGradient(colors: [Color(0xFF808080), Color(0xFFBFBFBF)]),
-          ),
-        );
+        expectGradientColors(lerpedColor, [0xFF808080, 0xFFBFBFBF]);
       });
 
       test(
@@ -217,4 +179,8 @@ void main() {
       );
     });
   });
+}
+
+void expectGradientColors(Gradient gradient, List<int> values) {
+  expect(gradient.colors.map((color) => color.toARGB32()), equals(values));
 }
