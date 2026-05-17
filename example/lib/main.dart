@@ -55,9 +55,9 @@ class _PrettyQrHomePageState extends State<PrettyQrHomePage> {
   void initState() {
     super.initState();
 
-    qrCode = QrCode.fromData(
-      data: 'https://pub.dev/packages/pretty_qr_code',
-      errorCorrectLevel: QrErrorCorrectLevel.H,
+    qrCode = QrCode(
+      payload: QrPayload.fromString('https://pub.dev/packages/pretty_qr_code'),
+      errorCorrectLevel: QrErrorCorrectLevel.high,
     );
 
     qrImage = QrImage(qrCode);

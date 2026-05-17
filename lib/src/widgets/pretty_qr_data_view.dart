@@ -17,7 +17,7 @@ class PrettyQrDataView extends StatefulWidget {
 
   /// The QR code error correction level.
   @protected
-  final int errorCorrectLevel;
+  final QrErrorCorrectLevel errorCorrectLevel;
 
   /// {@macro pretty_qr_code.rendering.PrettyQrRenderView.decoration}
   @protected
@@ -37,8 +37,8 @@ class PrettyQrDataView extends StatefulWidget {
     super.key,
     this.decoration,
     this.errorBuilder,
-    this.errorCorrectLevel = QrErrorCorrectLevel.L,
-  }) : assert(errorCorrectLevel >= 0 && errorCorrectLevel <= 3);
+    this.errorCorrectLevel = QrErrorCorrectLevel.low,
+  });
 
   @override
   State<PrettyQrDataView> createState() => _PrettyQrDataViewState();
@@ -62,9 +62,7 @@ class _PrettyQrDataViewState extends State<PrettyQrDataView> {
   }
 
   @override
-  void didUpdateWidget(
-    covariant PrettyQrDataView oldWidget,
-  ) {
+  void didUpdateWidget(covariant PrettyQrDataView oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.data != widget.data) {
@@ -80,8 +78,8 @@ class _PrettyQrDataViewState extends State<PrettyQrDataView> {
       _lastError = null;
       _lastStackTrace = null;
 
-      final qrCode = QrCode.fromData(
-        data: widget.data,
+      final qrCode = QrCode(
+        payload: QrPayload.fromString(widget.data),
         errorCorrectLevel: widget.errorCorrectLevel,
       );
 
@@ -103,10 +101,10 @@ class _PrettyQrDataViewState extends State<PrettyQrDataView> {
           stack: stackTrace,
           informationCollector: () => [
             StringProperty('Data', widget.data),
-            IntProperty(
+            DiagnosticsProperty<QrErrorCorrectLevel>(
               'Error correction level',
               widget.errorCorrectLevel,
-              defaultValue: QrErrorCorrectLevel.L,
+              defaultValue: QrErrorCorrectLevel.low,
             ),
           ],
         ),
@@ -133,18 +131,13 @@ class _PrettyQrErrorWidget extends StatelessWidget {
   final Object error; // ignore: no-object-declaration, catch any errors.
 
   @literal
-  const _PrettyQrErrorWidget({
-    required this.error,
-  });
+  const _PrettyQrErrorWidget({required this.error});
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final dimension = math.min(
-          constraints.maxWidth,
-          constraints.maxHeight,
-        );
+        final dimension = math.min(constraints.maxWidth, constraints.maxHeight);
 
         if (!kDebugMode) {
           return SizedBox.square(dimension: dimension);
@@ -156,9 +149,7 @@ class _PrettyQrErrorWidget extends StatelessWidget {
             alignment: Alignment.center,
             children: [
               const Positioned.fill(
-                child: Placeholder(
-                  color: Color(0xCF8D021F),
-                ),
+                child: Placeholder(color: Color(0xCF8D021F)),
               ),
               Padding(
                 padding: const EdgeInsets.all(4.0),
@@ -167,9 +158,7 @@ class _PrettyQrErrorWidget extends StatelessWidget {
                     error.toString(),
                     textAlign: TextAlign.center,
                     textDirection: TextDirection.ltr,
-                    style: const TextStyle(
-                      shadows: [Shadow(blurRadius: 1.0)],
-                    ),
+                    style: const TextStyle(shadows: [Shadow(blurRadius: 1.0)]),
                   ),
                 ),
               ),

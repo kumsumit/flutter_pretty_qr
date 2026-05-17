@@ -51,9 +51,10 @@ void initState() {
   super.initState();
 
   final qrCode = QrCode(
-    8,
-    QrErrorCorrectLevel.H,
-  )..addData('lorem ipsum dolor sit amet');
+    payload: QrPayload.fromString('lorem ipsum dolor sit amet'),
+    errorCorrectLevel: QrErrorCorrectLevel.high,
+    minTypeNumber: 8,
+  );
 
   qrImage = QrImage(qrCode);
 }
@@ -91,9 +92,9 @@ PrettyQrView.data(
 You can save the QR code as an image using the [toImage](https://pub.dev/documentation/pretty_qr_code/latest/pretty_qr_code/PrettyQrImageExtension/toImage.html) or [toImageAsBytes](https://pub.dev/documentation/pretty_qr_code/latest/pretty_qr_code/PrettyQrImageExtension/toImageAsBytes.html) extension methods that apply to `QrImage`. Optionally, the `configuration` parameter may be used to set additional saving options, such as pixel ratio or text direction.
 
 ```dart
-final qrCode = QrCode.fromData(
-  data: 'lorem ipsum dolor sit amet',
-  errorCorrectLevel: QrErrorCorrectLevel.H,
+final qrCode = QrCode(
+  payload: QrPayload.fromString('lorem ipsum dolor sit amet'),
+  errorCorrectLevel: QrErrorCorrectLevel.high,
 );
 
 final qrImage = QrImage(qrCode);

@@ -29,7 +29,7 @@ class PrettyQr extends StatefulWidget {
 
   /// Error correct level.
   @nonVirtual
-  final int errorCorrectLevel;
+  final QrErrorCorrectLevel errorCorrectLevel;
 
   /// Round the corners.
   @nonVirtual
@@ -56,7 +56,7 @@ class PrettyQr extends StatefulWidget {
     this.size = 100,
     this.roundEdges = false,
     this.elementColor = const Color(0xFF000000),
-    this.errorCorrectLevel = QrErrorCorrectLevel.M,
+    this.errorCorrectLevel = QrErrorCorrectLevel.medium,
   });
 
   @override
@@ -75,9 +75,7 @@ class _PrettyQrState extends State<PrettyQr> {
   }
 
   @override
-  void didUpdateWidget(
-    covariant PrettyQr oldWidget,
-  ) {
+  void didUpdateWidget(covariant PrettyQr oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.data != widget.data) {
@@ -92,17 +90,18 @@ class _PrettyQrState extends State<PrettyQr> {
   @protected
   void prepareQrImage() {
     if (widget.typeNumber == null) {
-      final qrCode = QrCode.fromData(
-        data: widget.data,
+      final qrCode = QrCode(
+        payload: QrPayload.fromString(widget.data),
         errorCorrectLevel: widget.errorCorrectLevel,
       );
 
       qrImage = QrImage(qrCode);
     } else {
       final qrCode = QrCode(
-        widget.typeNumber!,
-        widget.errorCorrectLevel,
-      )..addData(widget.data);
+        payload: QrPayload.fromString(widget.data),
+        errorCorrectLevel: widget.errorCorrectLevel,
+        minTypeNumber: widget.typeNumber!,
+      );
 
       qrImage = QrImage(qrCode);
     }
