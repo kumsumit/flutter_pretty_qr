@@ -1,4 +1,6 @@
 import 'dart:ui';
+import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:qr/qr.dart';
 
@@ -47,6 +49,25 @@ extension PrettyQrSvgExtension on QrImage {
     }
 
     return (buffer..write('</svg>')).toString();
+  }
+
+  /// Returns UTF-8 encoded SVG bytes for this QR image.
+  Uint8List toSvgBytes({
+    final int? size,
+    final Color dark = const Color(0xFF000000),
+    final Color? background = const Color(0xFFFFFFFF),
+    final PrettyQrQuietZone quietZone = PrettyQrQuietZone.standard,
+  }) {
+    return Uint8List.fromList(
+      utf8.encode(
+        toSvg(
+          size: size,
+          dark: dark,
+          background: background,
+          quietZone: quietZone,
+        ),
+      ),
+    );
   }
 }
 

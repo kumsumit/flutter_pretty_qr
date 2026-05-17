@@ -16,4 +16,14 @@ void main() {
     expect(svg, contains('<rect'));
     expect(svg, endsWith('</svg>'));
   });
+
+  test('PrettyQrSvgExtension exports svg bytes', () {
+    final qrCode = QrCode(
+      payload: QrPayload.fromString('pretty qr'),
+      errorCorrectLevel: QrErrorCorrectLevel.low,
+    );
+    final bytes = QrImage(qrCode).toSvgBytes(size: 128);
+
+    expect(bytes, isNotEmpty);
+  });
 }

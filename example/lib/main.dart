@@ -514,6 +514,25 @@ class _PrettyQrSettingsState extends State<_PrettyQrSettings> {
                 : 'Try a larger version or lower correction level',
           ),
         ),
+        if (widget.decoration.image?.position ==
+            PrettyQrDecorationImagePosition.embedded)
+          ListTile(
+            leading: Icon(
+              widget.decoration
+                      .estimateScannability(
+                        errorCorrectLevel: widget.errorCorrectLevel,
+                      )
+                      .isSafe
+                  ? Icons.verified_outlined
+                  : Icons.warning_amber_outlined,
+            ),
+            title: const Text('Logo safety'),
+            subtitle: Text(scannabilityLabel),
+            trailing: TextButton(
+              onPressed: applySafeImage,
+              child: const Text('Fix'),
+            ),
+          ),
         const Divider(),
         SwitchListTile.adaptive(
           value: widget.decoration.quietZone != PrettyQrQuietZone.zero,
@@ -524,7 +543,7 @@ class _PrettyQrSettingsState extends State<_PrettyQrSettings> {
         const Divider(),
         LayoutBuilder(
           builder: (context, constraints) {
-            return PopupMenuButton(
+            return PopupMenuButton<Object>(
               onSelected: changeShape,
               constraints: BoxConstraints(
                 minWidth: constraints.maxWidth,
@@ -547,6 +566,19 @@ class _PrettyQrSettingsState extends State<_PrettyQrSettings> {
                   const PopupMenuItem(
                     value: PrettyQrCustomShape,
                     child: Text('Custom'),
+                  ),
+                  const PopupMenuDivider(),
+                  const PopupMenuItem(
+                    value: PrettyQrDecorationPreset.classic,
+                    child: Text('Classic preset'),
+                  ),
+                  const PopupMenuItem(
+                    value: PrettyQrDecorationPreset.rounded,
+                    child: Text('Rounded preset'),
+                  ),
+                  const PopupMenuItem(
+                    value: PrettyQrDecorationPreset.dots,
+                    child: Text('Dots preset'),
                   ),
                 ];
               },
@@ -731,8 +763,21 @@ class _PrettyQrSettingsState extends State<_PrettyQrSettings> {
 
   @protected
   void changeShape(
-    final Type type,
+    final Object type,
   ) {
+    if (type is PrettyQrDecorationPreset) {
+      widget.onChanged?.call(
+        PrettyQrDecoration.fromPreset(
+          type,
+          color: brush,
+          image: widget.decoration.image,
+          quietZone: widget.decoration.quietZone,
+          background: widget.decoration.background,
+        ),
+      );
+      return;
+    }
+
     var shape = widget.decoration.shape;
     switch (type) {
       case PrettyQrDotsSymbol:
@@ -854,6 +899,32 @@ class _PrettyQrSettingsState extends State<_PrettyQrSettings> {
   ) {
     final image = widget.decoration.image?.copyWith(position: value);
     widget.onChanged?.call(widget.decoration.copyWith(image: image));
+  }
+
+  @protected
+  String get scannabilityLabel {
+    final report = widget.decoration.estimateScannability(
+      errorCorrectLevel: widget.errorCorrectLevel,
+    );
+    final percent = (report.coveredFraction * 100).toStringAsFixed(1);
+    final recommended = report.recommendedErrorCorrectLevel.name;
+    switch (report.scannability) {
+      case PrettyQrScannability.good:
+        return '$percent% covered';
+      case PrettyQrScannability.warning:
+        return '$percent% covered; test before release';
+      case PrettyQrScannability.risky:
+        return '$percent% covered; try $recommended';
+    }
+  }
+
+  @protected
+  void applySafeImage() {
+    widget.onChanged?.call(
+      widget.decoration.withSafeImage(
+        errorCorrectLevel: widget.errorCorrectLevel,
+      ),
+    );
   }
 
   @protected

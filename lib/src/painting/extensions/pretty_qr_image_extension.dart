@@ -112,6 +112,21 @@ extension PrettyQrImageExtension on QrImage {
     return image.toByteData(format: format);
   }
 
+  /// Returns the QR code image as PNG bytes.
+  Future<Uint8List> toPngBytes({
+    required final int size,
+    final PrettyQrDecoration decoration = const PrettyQrDecoration(),
+    final ImageConfiguration configuration = ImageConfiguration.empty,
+  }) async {
+    final bytes = await toImageAsBytes(
+      size: size,
+      decoration: decoration,
+      configuration: configuration,
+      format: ui.ImageByteFormat.png,
+    );
+    return bytes!.buffer.asUint8List();
+  }
+
   /// Checks if the current platform support `toImage` method.
   @protected
   bool get _isNestedImagesSupported {

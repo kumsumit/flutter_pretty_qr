@@ -98,6 +98,19 @@ if (validation.isValid) {
 }
 ```
 
+When embedding a logo, you can ask the decoration for a conservative
+scannability estimate and clamp oversized images:
+
+```dart
+final report = decoration.estimateScannability(
+  errorCorrectLevel: QrErrorCorrectLevel.high,
+);
+
+final safeDecoration = decoration.withSafeImage(
+  errorCorrectLevel: QrErrorCorrectLevel.high,
+);
+```
+
 **Note:** Do _not_ create `QrImage` inside the `build` method; otherwise, you may have an undesired jank in the UI thread.
 
 ## Combine several styles
@@ -134,7 +147,13 @@ final qrImageBytes = await qrImage.toImageAsBytes(
   decoration: const PrettyQrDecoration(),
 );
 
+final pngBytes = await qrImage.toPngBytes(
+  size: 512,
+  decoration: const PrettyQrDecoration(),
+);
+
 final svg = qrImage.toSvg(size: 512);
+final svgBytes = qrImage.toSvgBytes(size: 512);
 ```
 
 See the `example` folder for more code samples of the various possibilities.

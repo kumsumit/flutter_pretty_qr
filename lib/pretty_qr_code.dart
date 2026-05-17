@@ -21,6 +21,7 @@ export 'src/base/components/pretty_qr_component.dart';
 export 'src/painting/pretty_qr_brush.dart';
 export 'src/painting/pretty_qr_clipper.dart';
 export 'src/painting/pretty_qr_shape.dart' hide clampDouble;
+export 'src/painting/pretty_qr_scannability.dart';
 export 'src/painting/pretty_qr_quiet_zone.dart';
 
 export 'src/painting/clippers/pretty_qr_circle_clipper.dart';
@@ -37,6 +38,7 @@ export 'src/painting/decoration/pretty_qr_decoration_tween.dart';
 
 export 'src/painting/extensions/pretty_qr_image_extension.dart';
 export 'src/painting/extensions/pretty_qr_module_extensions.dart';
+export 'src/painting/extensions/pretty_qr_decoration_safety_extension.dart';
 export 'src/painting/extensions/pretty_qr_svg_extension.dart';
 
 // rendering
