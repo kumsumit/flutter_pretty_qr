@@ -37,6 +37,7 @@ export 'src/painting/decoration/pretty_qr_decoration_tween.dart';
 
 export 'src/painting/extensions/pretty_qr_image_extension.dart';
 export 'src/painting/extensions/pretty_qr_module_extensions.dart';
+export 'src/painting/extensions/pretty_qr_svg_extension.dart';
 
 // rendering
 export 'src/rendering/pretty_qr_painting_context.dart';

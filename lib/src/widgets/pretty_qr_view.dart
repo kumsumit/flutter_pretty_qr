@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:qr/qr.dart';
 import 'package:meta/meta.dart';
 import 'package:flutter/widgets.dart';
@@ -54,14 +56,88 @@ class PrettyQrView extends LeafRenderObjectWidget {
     final Key? key,
     final PrettyQrDecoration? decoration,
     final ImageErrorWidgetBuilder? errorBuilder,
+    final int? maskPattern,
+    final int minTypeNumber = 1,
     final QrErrorCorrectLevel errorCorrectLevel = QrErrorCorrectLevel.low,
   }) {
     return PrettyQrDataView(
       key: key,
       data: data,
       decoration: decoration,
+      maskPattern: maskPattern,
+      minTypeNumber: minTypeNumber,
       errorCorrectLevel: errorCorrectLevel,
       errorBuilder: errorBuilder,
+    );
+  }
+
+  /// Creates a widget that displays a QR symbol obtained from a [payload].
+  @factory
+  static Widget payload({
+    required final QrPayload payload,
+    final Key? key,
+    final PrettyQrDecoration? decoration,
+    final ImageErrorWidgetBuilder? errorBuilder,
+    final int? maskPattern,
+    final int minTypeNumber = 1,
+    final QrErrorCorrectLevel errorCorrectLevel = QrErrorCorrectLevel.low,
+  }) {
+    return PrettyQrDataView.payload(
+      key: key,
+      payload: payload,
+      decoration: decoration,
+      maskPattern: maskPattern,
+      minTypeNumber: minTypeNumber,
+      errorCorrectLevel: errorCorrectLevel,
+      errorBuilder: errorBuilder,
+    );
+  }
+
+  /// Creates a widget that displays a QR symbol obtained from binary [data].
+  @factory
+  static Widget typedData({
+    required final TypedData data,
+    final Key? key,
+    final PrettyQrDecoration? decoration,
+    final ImageErrorWidgetBuilder? errorBuilder,
+    final int? maskPattern,
+    final int minTypeNumber = 1,
+    final QrErrorCorrectLevel errorCorrectLevel = QrErrorCorrectLevel.low,
+  }) {
+    return PrettyQrDataView.typedData(
+      key: key,
+      data: data,
+      decoration: decoration,
+      maskPattern: maskPattern,
+      minTypeNumber: minTypeNumber,
+      errorCorrectLevel: errorCorrectLevel,
+      errorBuilder: errorBuilder,
+    );
+  }
+
+  /// Validates string [data] against a QR type and error correction level.
+  static QrValidationResult validateData({
+    required final String data,
+    required final int typeNumber,
+    final QrErrorCorrectLevel errorCorrectLevel = QrErrorCorrectLevel.low,
+  }) {
+    return validatePayload(
+      payload: QrPayload.fromString(data),
+      typeNumber: typeNumber,
+      errorCorrectLevel: errorCorrectLevel,
+    );
+  }
+
+  /// Validates [payload] against a QR type and error correction level.
+  static QrValidationResult validatePayload({
+    required final QrPayload payload,
+    required final int typeNumber,
+    final QrErrorCorrectLevel errorCorrectLevel = QrErrorCorrectLevel.low,
+  }) {
+    return QrValidationResult.fromPayload(
+      payload: payload,
+      typeNumber: typeNumber,
+      errorCorrectLevel: errorCorrectLevel,
     );
   }
 

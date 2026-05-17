@@ -39,6 +39,10 @@ class PrettyQr extends StatefulWidget {
   @nonVirtual
   final int? typeNumber;
 
+  /// The mask pattern to use, or `null` to use the best mask pattern.
+  @nonVirtual
+  final int? maskPattern;
+
   /// The image to be painted into QR code.
   @nonVirtual
   final ImageProvider? image;
@@ -53,6 +57,7 @@ class PrettyQr extends StatefulWidget {
     super.key,
     this.image,
     this.typeNumber,
+    this.maskPattern,
     this.size = 100,
     this.roundEdges = false,
     this.elementColor = const Color(0xFF000000),
@@ -84,6 +89,8 @@ class _PrettyQrState extends State<PrettyQr> {
       prepareQrImage();
     } else if (oldWidget.errorCorrectLevel != widget.errorCorrectLevel) {
       prepareQrImage();
+    } else if (oldWidget.maskPattern != widget.maskPattern) {
+      prepareQrImage();
     }
   }
 
@@ -95,7 +102,9 @@ class _PrettyQrState extends State<PrettyQr> {
         errorCorrectLevel: widget.errorCorrectLevel,
       );
 
-      qrImage = QrImage(qrCode);
+      qrImage = widget.maskPattern == null
+          ? QrImage(qrCode)
+          : QrImage.withMaskPattern(qrCode, widget.maskPattern!);
     } else {
       final qrCode = QrCode(
         payload: QrPayload.fromString(widget.data),
@@ -103,7 +112,9 @@ class _PrettyQrState extends State<PrettyQr> {
         minTypeNumber: widget.typeNumber!,
       );
 
-      qrImage = QrImage(qrCode);
+      qrImage = widget.maskPattern == null
+          ? QrImage(qrCode)
+          : QrImage.withMaskPattern(qrCode, widget.maskPattern!);
     }
   }
 

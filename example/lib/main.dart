@@ -43,6 +43,9 @@ class PrettyQrHomePage extends StatefulWidget {
 
 class _PrettyQrHomePageState extends State<PrettyQrHomePage> {
   @protected
+  late final TextEditingController dataEditingController;
+
+  @protected
   late QrCode qrCode;
 
   @protected
@@ -51,16 +54,22 @@ class _PrettyQrHomePageState extends State<PrettyQrHomePage> {
   @protected
   late PrettyQrDecoration decoration;
 
+  @protected
+  QrErrorCorrectLevel errorCorrectLevel = QrErrorCorrectLevel.high;
+
+  @protected
+  int minTypeNumber = 1;
+
+  @protected
+  int? maskPattern;
+
   @override
   void initState() {
     super.initState();
 
-    qrCode = QrCode(
-      payload: QrPayload.fromString('https://pub.dev/packages/pretty_qr_code'),
-      errorCorrectLevel: QrErrorCorrectLevel.high,
+    dataEditingController = TextEditingController(
+      text: 'https://pub.dev/packages/pretty_qr_code',
     );
-
-    qrImage = QrImage(qrCode);
 
     decoration = const PrettyQrDecoration(
       shape: PrettyQrSmoothSymbol(
@@ -69,6 +78,35 @@ class _PrettyQrHomePageState extends State<PrettyQrHomePage> {
       image: _PrettyQrSettings.kDefaultQrDecorationImage,
       background: Colors.transparent,
       quietZone: PrettyQrQuietZone.zero,
+    );
+
+    updateQrImage();
+  }
+
+  @protected
+  void updateQrImage() {
+    try {
+      qrCode = QrCode(
+        payload: QrPayload.fromString(dataEditingController.text),
+        errorCorrectLevel: errorCorrectLevel,
+        minTypeNumber: minTypeNumber,
+      );
+
+      qrImage = maskPattern == null
+          ? QrImage(qrCode)
+          : QrImage.withMaskPattern(qrCode, maskPattern!);
+    } on Exception {
+      // Keep the last valid QR image visible while validation explains the
+      // current input issue.
+    }
+  }
+
+  @protected
+  QrValidationResult get validation {
+    return PrettyQrView.validateData(
+      data: dataEditingController.text,
+      typeNumber: minTypeNumber,
+      errorCorrectLevel: errorCorrectLevel,
     );
   }
 
@@ -127,6 +165,25 @@ class _PrettyQrHomePageState extends State<PrettyQrHomePage> {
                             padding: safePadding.copyWith(top: 0),
                             child: _PrettyQrSettings(
                               decoration: decoration,
+                              maskPattern: maskPattern,
+                              minTypeNumber: minTypeNumber,
+                              validation: validation,
+                              errorCorrectLevel: errorCorrectLevel,
+                              dataEditingController: dataEditingController,
+                              onMaskPatternChanged: (value) => setState(() {
+                                maskPattern = value;
+                                updateQrImage();
+                              }),
+                              onMinTypeNumberChanged: (value) => setState(() {
+                                minTypeNumber = value;
+                                updateQrImage();
+                              }),
+                              onErrorCorrectLevelChanged: (value) =>
+                                  setState(() {
+                                errorCorrectLevel = value;
+                                updateQrImage();
+                              }),
+                              onDataChanged: (_) => setState(updateQrImage),
                               onChanged: (value) => setState(() {
                                 decoration = value;
                               }),
@@ -150,6 +207,12 @@ class _PrettyQrHomePageState extends State<PrettyQrHomePage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    dataEditingController.dispose();
+    super.dispose();
   }
 }
 
@@ -217,13 +280,40 @@ class _PrettyQrAnimatedViewState extends State<_PrettyQrAnimatedView> {
 
 class _PrettyQrSettings extends StatefulWidget {
   @protected
+  final TextEditingController dataEditingController;
+
+  @protected
   final PrettyQrDecoration decoration;
+
+  @protected
+  final QrValidationResult validation;
+
+  @protected
+  final QrErrorCorrectLevel errorCorrectLevel;
+
+  @protected
+  final int minTypeNumber;
+
+  @protected
+  final int? maskPattern;
 
   @protected
   final Future<String?> Function(int)? onExportPressed;
 
   @protected
   final ValueChanged<PrettyQrDecoration>? onChanged;
+
+  @protected
+  final ValueChanged<String>? onDataChanged;
+
+  @protected
+  final ValueChanged<QrErrorCorrectLevel>? onErrorCorrectLevelChanged;
+
+  @protected
+  final ValueChanged<int>? onMinTypeNumberChanged;
+
+  @protected
+  final ValueChanged<int?>? onMaskPatternChanged;
 
   @visibleForTesting
   static const kDefaultQrDecorationImage = PrettyQrDecorationImage(
@@ -237,9 +327,18 @@ class _PrettyQrSettings extends StatefulWidget {
   static const kDefaultQrDecorationBrush = Color(0xFF74565F);
 
   const _PrettyQrSettings({
+    required this.dataEditingController,
     required this.decoration,
+    required this.errorCorrectLevel,
+    required this.maskPattern,
+    required this.minTypeNumber,
+    required this.validation,
     this.onChanged,
+    this.onDataChanged,
+    this.onMaskPatternChanged,
     this.onExportPressed,
+    this.onMinTypeNumberChanged,
+    this.onErrorCorrectLevelChanged,
   });
 
   @override
@@ -313,6 +412,109 @@ class _PrettyQrSettingsState extends State<_PrettyQrSettings> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+          child: TextField(
+            controller: widget.dataEditingController,
+            minLines: 1,
+            maxLines: 3,
+            onChanged: widget.onDataChanged,
+            decoration: const InputDecoration(
+              labelText: 'Data',
+              prefixIcon: Icon(Icons.qr_code_2),
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            return PopupMenuButton<QrErrorCorrectLevel>(
+              onSelected: widget.onErrorCorrectLevelChanged,
+              constraints: BoxConstraints(minWidth: constraints.maxWidth),
+              initialValue: widget.errorCorrectLevel,
+              itemBuilder: (context) {
+                return QrErrorCorrectLevel.values.map((level) {
+                  return PopupMenuItem(
+                    value: level,
+                    child: Text(level.name),
+                  );
+                }).toList();
+              },
+              child: ListTile(
+                leading: const Icon(Icons.health_and_safety_outlined),
+                title: const Text('Error correction'),
+                trailing: Text(
+                  widget.errorCorrectLevel.name,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+              ),
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.pin_outlined),
+          title: const Text('Minimum version'),
+          subtitle: Slider(
+            min: 1,
+            max: 40,
+            divisions: 39,
+            value: widget.minTypeNumber.toDouble(),
+            label: widget.minTypeNumber.toString(),
+            onChanged: (value) {
+              widget.onMinTypeNumberChanged?.call(value.round());
+            },
+          ),
+          trailing: Text(
+            widget.minTypeNumber.toString(),
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+        ),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            return PopupMenuButton<int?>(
+              onSelected: widget.onMaskPatternChanged,
+              constraints: BoxConstraints(minWidth: constraints.maxWidth),
+              initialValue: widget.maskPattern,
+              itemBuilder: (context) {
+                return [
+                  const PopupMenuItem(
+                    value: null,
+                    child: Text('Automatic'),
+                  ),
+                  for (var pattern = 0; pattern < 8; pattern++)
+                    PopupMenuItem(
+                      value: pattern,
+                      child: Text('Pattern $pattern'),
+                    ),
+                ];
+              },
+              child: ListTile(
+                leading: const Icon(Icons.grid_view_outlined),
+                title: const Text('Mask pattern'),
+                trailing: Text(
+                  widget.maskPattern?.toString() ?? 'Auto',
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+              ),
+            );
+          },
+        ),
+        ListTile(
+          leading: Icon(
+            widget.validation.isValid
+                ? Icons.check_circle_outline
+                : Icons.error_outline,
+          ),
+          title: Text(
+            widget.validation.isValid ? 'Valid QR options' : 'Data too long',
+          ),
+          subtitle: Text(
+            widget.validation.isValid
+                ? 'Rendered version ${widget.validation.qrCode!.typeNumber}'
+                : 'Try a larger version or lower correction level',
+          ),
+        ),
+        const Divider(),
         SwitchListTile.adaptive(
           value: widget.decoration.quietZone != PrettyQrQuietZone.zero,
           onChanged: (value) => toggleQuietZone(),

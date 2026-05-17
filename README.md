@@ -31,6 +31,8 @@ First, follow the [package installation instructions](https://pub.dev/packages/p
 ```dart
 PrettyQrView.data(
   data: 'lorem ipsum dolor sit amet',
+  errorCorrectLevel: QrErrorCorrectLevel.high,
+  minTypeNumber: 2,
   decoration: const PrettyQrDecoration(
     image: PrettyQrDecorationImage(
       image: AssetImage('images/flutter.png'),
@@ -65,6 +67,34 @@ Widget build(BuildContext context) {
     qrImage: qrImage,
     decoration: const PrettyQrDecoration(),
   );
+}
+```
+
+You can also render pre-built payloads or binary data:
+
+```dart
+PrettyQrView.payload(
+  payload: QrPayload()
+    ..addAlphaNumeric('HELLO')
+    ..addNumeric('12345'),
+)
+
+PrettyQrView.typedData(
+  data: Uint8List.fromList([1, 2, 3, 4]),
+)
+```
+
+To validate data before rendering:
+
+```dart
+final validation = PrettyQrView.validateData(
+  data: 'lorem ipsum dolor sit amet',
+  typeNumber: 4,
+  errorCorrectLevel: QrErrorCorrectLevel.high,
+);
+
+if (validation.isValid) {
+  final qrImage = QrImage(validation.qrCode!);
 }
 ```
 
@@ -103,6 +133,8 @@ final qrImageBytes = await qrImage.toImageAsBytes(
   format: ImageByteFormat.png,
   decoration: const PrettyQrDecoration(),
 );
+
+final svg = qrImage.toSvg(size: 512);
 ```
 
 See the `example` folder for more code samples of the various possibilities.

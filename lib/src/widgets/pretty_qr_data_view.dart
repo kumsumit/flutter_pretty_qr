@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:typed_data';
 
 import 'package:qr/qr.dart';
 import 'package:meta/meta.dart';
@@ -13,11 +14,23 @@ import 'package:pretty_qr_code/src/painting/decoration/pretty_qr_decoration.dart
 class PrettyQrDataView extends StatefulWidget {
   /// The QR code data.
   @protected
-  final String data;
+  final Object data;
+
+  /// Creates a QR payload from [data].
+  @protected
+  final QrPayload Function(Object data) payloadBuilder;
 
   /// The QR code error correction level.
   @protected
   final QrErrorCorrectLevel errorCorrectLevel;
+
+  /// The minimum QR type number to use.
+  @protected
+  final int minTypeNumber;
+
+  /// The mask pattern to use, or `null` to use the best mask pattern.
+  @protected
+  final int? maskPattern;
 
   /// {@macro pretty_qr_code.rendering.PrettyQrRenderView.decoration}
   @protected
@@ -37,11 +50,48 @@ class PrettyQrDataView extends StatefulWidget {
     super.key,
     this.decoration,
     this.errorBuilder,
+    this.maskPattern,
+    this.minTypeNumber = 1,
     this.errorCorrectLevel = QrErrorCorrectLevel.low,
-  });
+  }) : payloadBuilder = _payloadFromString;
+
+  @literal
+  const PrettyQrDataView.payload({
+    required QrPayload payload,
+    super.key,
+    this.decoration,
+    this.errorBuilder,
+    this.maskPattern,
+    this.minTypeNumber = 1,
+    this.errorCorrectLevel = QrErrorCorrectLevel.low,
+  }) : data = payload,
+       payloadBuilder = _payloadFromPayload;
+
+  @literal
+  const PrettyQrDataView.typedData({
+    required this.data,
+    super.key,
+    this.decoration,
+    this.errorBuilder,
+    this.maskPattern,
+    this.minTypeNumber = 1,
+    this.errorCorrectLevel = QrErrorCorrectLevel.low,
+  }) : payloadBuilder = _payloadFromTypedData;
 
   @override
   State<PrettyQrDataView> createState() => _PrettyQrDataViewState();
+}
+
+QrPayload _payloadFromString(Object data) {
+  return QrPayload.fromString(data as String);
+}
+
+QrPayload _payloadFromPayload(Object data) {
+  return data as QrPayload;
+}
+
+QrPayload _payloadFromTypedData(Object data) {
+  return QrPayload.fromTypedData(data as TypedData);
 }
 
 @sealed
@@ -69,6 +119,10 @@ class _PrettyQrDataViewState extends State<PrettyQrDataView> {
       _prepareQrImage();
     } else if (oldWidget.errorCorrectLevel != widget.errorCorrectLevel) {
       _prepareQrImage();
+    } else if (oldWidget.minTypeNumber != widget.minTypeNumber) {
+      _prepareQrImage();
+    } else if (oldWidget.maskPattern != widget.maskPattern) {
+      _prepareQrImage();
     }
   }
 
@@ -79,11 +133,14 @@ class _PrettyQrDataViewState extends State<PrettyQrDataView> {
       _lastStackTrace = null;
 
       final qrCode = QrCode(
-        payload: QrPayload.fromString(widget.data),
+        payload: widget.payloadBuilder(widget.data),
         errorCorrectLevel: widget.errorCorrectLevel,
+        minTypeNumber: widget.minTypeNumber,
       );
 
-      _qrImage = QrImage(qrCode);
+      _qrImage = widget.maskPattern == null
+          ? QrImage(qrCode)
+          : QrImage.withMaskPattern(qrCode, widget.maskPattern!);
     } on Exception catch (error, stackTrace) {
       _lastError = error;
       _lastStackTrace = stackTrace;
@@ -100,12 +157,18 @@ class _PrettyQrDataViewState extends State<PrettyQrDataView> {
           exception: error,
           stack: stackTrace,
           informationCollector: () => [
-            StringProperty('Data', widget.data),
+            DiagnosticsProperty<Object>('Data', widget.data),
             DiagnosticsProperty<QrErrorCorrectLevel>(
               'Error correction level',
               widget.errorCorrectLevel,
               defaultValue: QrErrorCorrectLevel.low,
             ),
+            IntProperty(
+              'Minimum type number',
+              widget.minTypeNumber,
+              defaultValue: 1,
+            ),
+            IntProperty('Mask pattern', widget.maskPattern, defaultValue: null),
           ],
         ),
       );

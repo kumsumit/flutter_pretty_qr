@@ -7,8 +7,25 @@ import 'package:pretty_qr_code/src/painting/pretty_qr_brush.dart';
 import 'package:pretty_qr_code/src/painting/pretty_qr_shape.dart';
 import 'package:pretty_qr_code/src/painting/pretty_qr_painter.dart';
 import 'package:pretty_qr_code/src/painting/pretty_qr_quiet_zone.dart';
+import 'package:pretty_qr_code/src/painting/shapes/pretty_qr_dots_symbol.dart';
 import 'package:pretty_qr_code/src/painting/shapes/pretty_qr_smooth_symbol.dart';
+import 'package:pretty_qr_code/src/painting/shapes/pretty_qr_squares_symbol.dart';
 import 'package:pretty_qr_code/src/painting/decoration/pretty_qr_decoration_image.dart';
+
+/// Built-in QR decoration presets.
+enum PrettyQrDecorationPreset {
+  /// Square modules with no additional styling.
+  classic,
+
+  /// Smooth modules with softened joins.
+  smooth,
+
+  /// Circular data modules.
+  dots,
+
+  /// Dense square modules with rounded corners.
+  rounded,
+}
 
 /// {@template pretty_qr_code.painting.PrettyQrDecoration}
 /// An immutable description of how to paint a QR image.
@@ -52,6 +69,35 @@ class PrettyQrDecoration with Diagnosticable {
     // ignore: deprecated_member_use_from_same_package, backward compatibility.
     this.shape = kDefaultDecorationShape,
   });
+
+  /// Creates a decoration from one of the built-in presets.
+  factory PrettyQrDecoration.fromPreset(
+    PrettyQrDecorationPreset preset, {
+    final Color? background,
+    final Color color = const Color(0xFF000000),
+    final PrettyQrQuietZone? quietZone,
+    final PrettyQrDecorationImage? image,
+  }) {
+    return PrettyQrDecoration(
+      image: image,
+      quietZone: quietZone,
+      background: background,
+      shape: switch (preset) {
+        PrettyQrDecorationPreset.classic => PrettyQrSquaresSymbol(
+          color: color,
+          density: 1,
+          rounding: 0,
+        ),
+        PrettyQrDecorationPreset.smooth => PrettyQrSmoothSymbol(color: color),
+        PrettyQrDecorationPreset.dots => PrettyQrDotsSymbol(color: color),
+        PrettyQrDecorationPreset.rounded => PrettyQrSquaresSymbol(
+          color: color,
+          density: 0.86,
+          rounding: 0.5,
+        ),
+      },
+    );
+  }
 
   @override
   String toStringShort() {
